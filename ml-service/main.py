@@ -18,7 +18,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS Middleware agar dapat diakses dari Next.js frontend
+# CORS Middleware agar dapat diakses dari aplikasi Flutter Web / Mobile maupun frontend lainnya
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -133,3 +133,4 @@ async def predict_plastic(file: UploadFile = File(...)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+

@@ -6,3 +6,4 @@ numpy>=1.26.0
 tensorflow>=2.15.0
 scikit-learn>=1.4.0
 opencv-python-headless>=4.9.0
+

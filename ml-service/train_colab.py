@@ -166,3 +166,4 @@ print(classification_report(y_true, y_pred, target_names=CLASSES))
 OUTPUT_MODEL_PATH = "deep_sorting_mobilenetv2.keras"
 model.save(OUTPUT_MODEL_PATH)
 print(f"Model berhasil diekspor ke: {OUTPUT_MODEL_PATH}")
+

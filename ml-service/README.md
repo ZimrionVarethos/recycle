@@ -1,10 +1,12 @@
 # Deep Sorting ML Service (FastAPI & Google Colab)
 
-Modul backend Python untuk melatih dan menyajikan inferensi Convolutional Neural Networks (CNN) klasifikasi jenis sampah plastik.
+Modul backend Python opsional untuk melatih dan menyajikan inferensi Convolutional Neural Networks (CNN) klasifikasi jenis sampah plastik (`PET`, `HDPE`, `PVC`, `LDPE`, `PP`, `PS`, `Other`).
+
+> **Mode Testing Dummy**: Selama layanan Python ini belum di-host, aplikasi mobile Flutter tetap dapat dijalankan penuh menggunakan **Dummy Backend (ML Ringan On-Device 224×224 + Supabase)** dari menu **Pengaturan**.
 
 ---
 
-## 🚀 Alur Kerja Machine Learning
+## Alur Kerja Machine Learning
 
 ```text
 [Dataset 1.331 Citra]
@@ -20,54 +22,34 @@ Modul backend Python untuk melatih dan menyajikan inferensi Convolutional Neural
        │
        ▼
 [FastAPI Backend: main.py] (Port 8000)
+  - GET  /health
   - POST /predict (Input 224x224 RGB)
-  - Softmax Probabilities (7 Kelas)
-  - Grad-CAM Heatmap
+  - Softmax Probabilities (7 Kelas) + Grad-CAM Heatmap
        │
        ▼
-[Next.js App Router (Vercel / Local)]
-  - Disambungkan via ML_API_URL=http://localhost:8000
+[Flutter Mobile App: Deep Sorting]
+  - Disambungkan lewat Pengaturan -> Python FastAPI Backend (PYTHON_ML_URL)
 ```
 
 ---
 
 ## 1. Menjalankan FastAPI Server Secara Lokal
 
-### Instalasi Dependensi:
 ```bash
 cd ml-service
 pip install -r requirements.txt
-```
-
-### Menjalankan Server:
-```bash
 python main.py
 ```
-Layanan akan aktif di `http://localhost:8000`. Dokumentasi Swagger OpenAPI tersedia di `http://localhost:8000/docs`.
 
-### Uji Coba Endpoint:
-```bash
-curl -X POST "http://localhost:8000/predict" -F "file=@contoh_botol.jpg"
-```
+Server aktif di `http://localhost:8000` (Swagger docs: `http://localhost:8000/docs`).
+
+Untuk menguji dari **Android Emulator**, masukkan `http://10.0.2.2:8000` pada menu **Pengaturan -> Endpoint Python FastAPI** di aplikasi Flutter lalu tekan **Simpan & Tes `/health`**.
 
 ---
 
 ## 2. Pelatihan di Google Colab (`train_colab.py`)
 
-1. Buka [Google Colab](https://colab.research.google.com).
-2. Ubah runtime ke **GPU T4** (`Runtime` -> `Change runtime type` -> `T4 GPU`).
-3. Unggah folder dataset yang berisi 7 sub-folder:
-   `HDPE/`, `LDPE/`, `PET/`, `PP/`, `PS/`, `PVC/`, `Other/` ke `/content/dataset`.
-4. Jalankan kode dari [`train_colab.py`](file:///d:/recycle/ml-service/train_colab.py).
-5. Unduh berkas keluaran `deep_sorting_mobilenetv2.keras`.
-6. Pindahkan berkas tersebut ke dalam folder `ml-service/` untuk disajikan oleh `main.py`.
-
----
-
-## 3. Menghubungkan ke Next.js
-
-Di berkas `.env.local` pada root proyek website, setel:
-```env
-ML_API_URL=http://localhost:8000
-```
-Website Next.js akan langsung mengalihkan inferensi dari Mode Demo ke model nyata secara otomatis.
+1. Buka Google Colab dengan runtime **GPU T4**.
+2. Unggah folder dataset berisi 7 sub-folder: `HDPE/`, `LDPE/`, `PET/`, `PP/`, `PS/`, `PVC/`, `Other/` ke `/content/dataset`.
+3. Jalankan skrip pada [`train_colab.py`](file:///d:/recycle/ml-service/train_colab.py).
+4. Letakkan berkas `deep_sorting_mobilenetv2.keras` hasil pelatihan ke dalam `ml-service/`.
