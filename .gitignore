@@ -18,6 +18,8 @@ migrate_working_dir/
 !.env.example
 
 # Python / ML Artifacts
+.venv/
+*/.venv/
 ml-service/__pycache__/
 ml-service/.venv/
 *.keras

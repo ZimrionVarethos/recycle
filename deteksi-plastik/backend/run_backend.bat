@@ -1,5 +1,4 @@
 @echo off
-setlocal enabledelayedexpansion
 title Backend Python - Klasifikasi Sampah Plastik
 cd /d "%~dp0"
 
@@ -8,40 +7,35 @@ echo   BACKEND PYTHON FASTAPI - KLASIFIKASI SAMPAH PLASTIK
 echo ========================================================
 echo.
 
-if not exist ".venv" (
-    echo [1/3] Membuat Python Virtual Environment (.venv)...
-    python -m venv .venv
-    if errorlevel 1 (
-        echo [ERROR] Gagal membuat virtual environment. Pastikan Python 3.10+ terpasang.
-        pause
-        exit /b 1
-    )
-)
+if exist .venv goto :ACTIVATE
 
-echo [2/3] Mengaktifkan virtual environment dan memeriksa dependensi...
+echo [1/3] Membuat Python Virtual Environment...
+python -m venv .venv
+if errorlevel 1 goto :VENV_ERROR
+
+:ACTIVATE
+echo [2/3] Mengaktifkan virtual environment...
 call .venv\Scripts\activate.bat
 
+echo [3/3] Memeriksa dependensi library...
 python -c "import fastapi, uvicorn, PIL, cv2" >nul 2>&1
 if errorlevel 1 (
-    echo Mengunduh dan memasang library FastAPI, Uvicorn, Pillow, OpenCV, TensorFlow...
-    pip install -r requirements.txt
+    echo Mengunduh dan memasang dependensi requirements.txt...
+    python -m pip install -r requirements.txt
     if errorlevel 1 (
-        echo [WARN] Instalasi penuh requirements.txt gagal. Mencoba instalasi minimal...
-        pip install fastapi "uvicorn[standard]" python-multipart pillow opencv-python-headless
+        echo [WARN] Instalasi requirements.txt gagal. Memasang paket inti...
+        python -m pip install fastapi "uvicorn[standard]" python-multipart pillow opencv-python-headless
     )
 )
 
 echo.
 echo ========================================================
-echo   PANDUAN KONEKSI KE HP ANDROID (DALAM 1 WI-FI):
+echo   PANDUAN KONEKSI KE HP ANDROID:
 echo ========================================================
-echo Alamat IP Laptop Anda saat ini:
-for /f "tokens=4" %%a in ('route print ^| findstr 0.0.0.0 ^| findstr /v "0.0.0.0.*0.0.0.0"') do (
-    echo   -> http://%%a:8000
-)
+python -c "import socket; s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM); s.connect(('8.8.8.8', 80)); ip = s.getsockname()[0]; s.close(); print('Alamat IP Laptop Anda:'); print('  -> http://' + ip + ':8000')" 2>nul
 echo.
-echo Masukkan alamat di atas pada tab PENGATURAN di aplikasi HP.
-echo Jika memakai Android Emulator di laptop, gunakan:
+echo Masukkan alamat IP di atas pada tab PENGATURAN di aplikasi HP.
+echo Jika memakai Android Emulator di laptop:
 echo   -> http://10.0.2.2:8000
 echo.
 echo Dokumentasi API (Swagger) di browser:
@@ -49,6 +43,17 @@ echo   -> http://localhost:8000/docs
 echo ========================================================
 echo.
 echo Menjalankan server FastAPI di port 8000...
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+echo Tekan Ctrl+C untuk menghentikan server.
+echo.
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+goto :END
+
+:VENV_ERROR
+echo.
+echo [ERROR] Gagal membuat virtual environment.
+echo Pastikan Python 3.10+ sudah terpasang di komputer Anda.
+echo.
 pause
 
+:END
+pause
