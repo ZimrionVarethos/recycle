@@ -1,0 +1,4 @@
+Taruh 2 file hasil training notebook di folder ini:
+  plastic_best.keras
+  class_names.json
+(keduanya dibuat oleh sel "SIMPAN ARTEFAK" di notebook Colab)
